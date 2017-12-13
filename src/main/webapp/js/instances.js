@@ -113,6 +113,7 @@ function writeRow(name,data){
 	var cron_content="";
 	var indexips = new Map();
 	var alias="";
+	var reloadIPs = new Map();
 
 	for(var r in data){
 		if(r!='IndexType')
@@ -152,7 +153,8 @@ function writeRow(name,data){
 						css=' class="info"';
 						is_indexer = true;
 						indexips.set(ips.get_key(i),ips.get_key(i));
-					} 
+					}
+					reloadIPs.set(ips.get_key(i),ips.get_key(i));
 				}
 			}
 			if(is_set==false){
@@ -176,6 +178,11 @@ function writeRow(name,data){
 						cron_content+=",DeltaCron||"+rows[j].split("|")[1]+"||"+rows[j].split("|")[0];
 					}
 				}
+				if(reloadIPs.get(rows[j].split("|")[0])){
+					if(rows[j].split("|")[1]!='null' && r=='IndexType'){
+						reloadIPs.set(rows[j].split("|")[0],rows[j].split("|")[1]);
+					} 
+				}
 			} 
 	} 
 
@@ -185,9 +192,15 @@ function writeRow(name,data){
 		if(indexips.get_key(i)!='default')
 		index_ip_info+=","+indexips.get_key(i)+"||"+indexips.get_value(i);
 	}
-
+	
+	var reloadinfos="";
+	reloadIPs.set("default","")//fix bug 
+	for(var i = 0;i<reloadIPs.size();i++){   
+		if(reloadIPs.get_key(i)!='default')
+			reloadinfos+=","+reloadIPs.get_key(i)+"||"+reloadIPs.get_value(i);
+	}
 	var str = '<div alias="'+alias+'" class="bs-example widget-shadow" data-example-id="hoverable-table">';
-	str +='<h4>'+name+(' <a style="float:right;margin:0 3px;" data-id="'+name+'" data-ip="'+index_ip_info+'" data-info="'+cron_content+'" class="manage_index btn btn-success" data-toggle="modal" data-target="#gridSystemModal"> <i class="fa fa-dashboard"></i> <span class="waitloading">Manage Writer</span></a>');
+	str +='<h4>'+name+(' <a style="float:right;margin:0 3px;" reload-ip="'+reloadinfos+'" data-id="'+name+'" data-ip="'+index_ip_info+'" data-info="'+cron_content+'" class="manage_index btn btn-success" data-toggle="modal" data-target="#gridSystemModal"> <i class="fa fa-dashboard"></i> <span class="waitloading">Manage Writer</span></a>');
 	str +='<a title="edit cloud xml config file" style="float:right;margin:0 3px;" data-id="'+name+'" data-ip="'+index_ip_info+'" class="edit_config btn btn-primary" data-toggle="modal" data-target="#gridSystemModal"><i class="fa fa-edit"></i> <span style=" display:none" class="waitloading ">Edit Cloud Config</span></a>';
 	str +='<a title="upload river instance config files to cloud" style="float:right;margin:0 3px;" data-id="'+name+'" data-ip="'+index_ip_info+'" class="upload_config  btn btn-info" ><i class="fa fa-cloud-upload"></i> <span style=" display:none" class="waitloading ">Upload Instance Files</span></a>';
 	str +='</h4><table class="table table-hover"> <thead> <tr> <th>IP</th>'+columninfo+'</tr> </thead> <tbody> '+rowinfos+' </tbody> </table>';
@@ -242,7 +255,7 @@ $(function(){
 			content+='<div class="col-md-3 grid_box1"><button type="button" onclick="run_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\',\''+type+'\')" class="btn btn-sm btn-success"><i class="fa fa-caret-right"></i> RUN NOW</button></div></div>';
 		}  
 		content+='<div class="row">'+$(this).attr("data-ip")!=null?'<button type="button" onclick="stop_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\')" class="btn btn-danger btn-sm stop"><i class="fa fa-stop"></i> Stop JOBS</button>  <button type="button" onclick="resume_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\')" class="btn btn-primary  btn-sm resume"><i class="fa fa-refresh"></i> Resume JOBS</button>':'';
-		content+=' <button type="button" onclick="Reload_Config(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\')" class="btn btn-info btn-sm Reload"><i class="fa fa fa-repeat"></i> Reload'+($(this).attr("data-id")!=null?'':' ALL')+' Config</button>';
+		content+=' <button type="button" onclick="Reload_Config(\''+$(this).attr("data-id")+'\',\''+$(this).attr("reload-ip")+'\')" class="btn btn-info btn-sm Reload"><i class="fa fa fa-repeat"></i> Reload'+($(this).attr("data-id")!=null?'':' ALL')+' Config</button>';
 		content+='</div>';
 		$("#gridSystemModal .modal-body").attr("contentEditable",'false');
 		$("#gridSystemModal .modal-body").html(content);
