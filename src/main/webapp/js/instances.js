@@ -132,9 +132,10 @@ function writeRow(name,data){
 			continue;
 		var css="";
 		var indextype="0";
-		rowinfos+="<td scope=\"row\">"; 
-		rowinfos+='<a data-ip="'+ips.get_key(i)+'"  data-id="'+name+'" class="view_info " href="" data-toggle="modal" data-target="#gridSystemModal" title="view run state">';
-		rowinfos+= ips.get_key(i)+"</a></td>"; 
+		var rowcontent="";
+		rowcontent+="<td scope=\"row\">"; 
+		rowcontent+='<a data-ip="'+ips.get_key(i)+'"  data-id="'+name+'" class="view_info " href="" data-toggle="modal" data-target="#gridSystemModal" title="view run state">';
+		rowcontent+= ips.get_key(i)+"</a></td>"; 
 		for(var r in data){    
 			var rows = data[r].split(",");  
 			var is_set = false; 
@@ -143,7 +144,7 @@ function writeRow(name,data){
 					if(r=='IndexType'){
 						indextype = rows[j].split("|")[1];
 					}else{
-						rowinfos+="<td>"+(rows[j].split("|")[1]=='null'?'not set!':rows[j].split("|")[1])+"</td>";
+						rowcontent+="<td>"+(rows[j].split("|")[1]=='null'?'not set!':rows[j].split("|")[1])+"</td>";
 					}
 					if(r=='Alias'){
 						alias = rows[j].split("|")[1];
@@ -158,10 +159,10 @@ function writeRow(name,data){
 				}
 			}
 			if(is_set==false){
-				rowinfos+="<td>not set!</td>";
+				rowcontent+="<td>not set!</td>";
 			}
 		}   
-		rowinfos="<tr"+css+" data-id="+indextype+">"+rowinfos+"</tr>";
+		rowinfos+="<tr"+css+" data-id="+indextype+">"+rowcontent+"</tr>";
 	}
    //get indexer info
 	for(var r in data){ 
