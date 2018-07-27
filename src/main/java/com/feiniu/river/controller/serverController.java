@@ -1,12 +1,7 @@
 package com.feiniu.river.controller;
 
-import java.util.ArrayList;
+import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,20 +10,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.feiniu.river.config.GlobalConfig;
+import com.feiniu.river.service.RiverCenter;
 import com.feiniu.river.util.Folder;
 import com.feiniu.river.util.HttpClient;
 import com.feiniu.river.util.MD5Util;
 import com.feiniu.river.util.ZKUtil;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 @Controller
 @RequestMapping("/server")
 public class serverController {
-
+	
+	
+	@RequestMapping(value = "/getHosts", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+	@ResponseBody
+	public String getHosts() { 
+		HashMap<String, Object> res = new HashMap<String, Object>(); 
+		res.put("data", GlobalConfig.riverUrls);
+		return JSONArray.fromObject(res).toString(); 
+	}
+	
+	
 	@RequestMapping(value = "/getInstance", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String getInstance() {
 		String _res = "400";
-		_res = JSONArray.fromObject(getAllInstances()).toString();
+		_res = JSONArray.fromObject(RiverCenter.getAllInstances()).toString();
 		return _res;
 	}
 
@@ -39,7 +48,7 @@ public class serverController {
 		String _res = "400";
 		HashMap<String, Object> res = new HashMap<String, Object>();
 		HashMap<String, Object> data = new HashMap<String, Object>();
-		HashMap<String, Object> tmp = getAllInstances();
+		HashMap<String, Object> tmp = RiverCenter.getAllInstances();
 		data.put(
 				"instances",
 				((HashMap<String, HashMap<String, HashMap<String, Object>>>) tmp
@@ -77,6 +86,7 @@ public class serverController {
 		_res = JSONArray.fromObject(res).toString();
 		return _res;
 	}
+ 
 
 	@RequestMapping(value = "/reloadInstanceConfig", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
@@ -162,6 +172,15 @@ public class serverController {
 		case "stop":
 			
 			break;
+		case "runCode":
+			_res = runCode(instance,ip);
+			break;
+		case "backup_config":
+			_res = backup_config(instance,ip);
+			break; 
+		case "resetInstanceState":
+			_res = resetInstanceState(instance,ip);
+			break; 
 		case "getNodeConfig":
 			_res=getNodeConfig(ip);
 			break; 
@@ -310,69 +329,49 @@ public class serverController {
 		return _res;
 	}
 	
+	private String runCode(String codes,String ip) {
+		String _res = "400";
+		HashMap<String, Object> res = new HashMap<String, Object>();  
+		if(ip.length()>5) {
+			try {
+				String str = HttpClient.sendGet("http://" + ip
+						+ "/search.doaction", "ac=runCode&code="+getCode("runCode")+"&script="+URLEncoder.encode(codes, "utf-8"));
+				res.put("data", str);
+				_res = JSONArray.fromObject(res).toString();
+			}catch (Exception e) {
+				// TODO: handle exception
+			} 
+		} 
+		return _res;
+	}
+	
+	private String backup_config(String instance,String ip) {
+		String _res = "400";
+		HashMap<String, Object> res = new HashMap<String, Object>(); 
+		RiverCenter.backup(instance);
+		res.put("data", "success!");
+		_res = JSONArray.fromObject(res).toString();
+		return _res;
+	}
+	
+	private String resetInstanceState(String instance,String ip) {
+		String _res = "400";
+		HashMap<String, Object> res = new HashMap<String, Object>(); 
+		String str = HttpClient.sendGet("http://" + ip
+				+ "/search.doaction", "ac=resetInstanceState&code="+getCode("resetInstanceState")+"&instance="+instance);
+		res.put("data", str);
+		_res = JSONArray.fromObject(res).toString();
+		return _res;
+	}
+	
 	private String removeInstanceFromNode(String instance) {
 		String _res = "400";
 		HashMap<String, Object> res = new HashMap<String, Object>(); 
 		res.put("data", "");
 		_res = JSONArray.fromObject(res).toString();
 		return _res;
-	}
-
-	private HashMap<String, Object> getAllInstances() {
-		HashMap<String, Object> res = new HashMap<String, Object>();
-		HashMap<String, HashMap<String, HashMap<String, Object>>> _tmp = new HashMap<String, HashMap<String, HashMap<String, Object>>>();
-		List<String> downServer = new ArrayList<String>();
-		for (String path : GlobalConfig.riverUrls.split(",")) {
-			try {
-				String str = HttpClient.sendGet("http://" + path
-						+ "/search.doaction", "ac=getInstances&code="+getCode("getInstances"));
-				JSONObject jr = JSONObject.fromObject(str);
-				jr = JSONObject.fromObject(jr.get("info"));
-				Iterator<?> itr = jr.keys();
-				while (itr.hasNext()) {
-					String alias = (String) itr.next();
-					JSONArray ja = jr.getJSONArray(alias);
-					HashMap<String, HashMap<String, Object>> instances = new HashMap<String, HashMap<String, Object>>();
-					if (_tmp.containsKey(alias)) {
-						instances = _tmp.get(alias);
-					}
-					for (int j = 0; j < ja.size(); j++) {
-						String nodes = ja.getString(j);
-						String instanceName = nodes.split(":")[0];
-						if (!instances.containsKey(instanceName)) {
-							instances.put(instanceName,
-									new HashMap<String, Object>());
-						}
-						String[] tmps = nodes.split(":");
-						for (int i = 0; i < tmps.length; i++) {
-							if (i > 0) {
-								String k = tmps[i].split("]")[0].substring(1);
-								if (tmps[i].split("]").length != 2) {
-									continue;
-								}
-								String v = tmps[i].split("]")[1];
-								if (instances.get(instanceName).containsKey(k)) {
-									instances.get(instanceName).put(
-											k,
-											instances.get(instanceName).get(k)
-													+ "," + path + "|" + v);
-								} else {
-									instances.get(instanceName).put(k,
-											path + "|" + v);
-								}
-							}
-						}
-					}
-					_tmp.put(alias, instances);
-				}
-			} catch (Exception e) {
-				downServer.add(path);
-			}
-		}
-		res.put("ServerDown", downServer);
-		res.put("data", _tmp);
-		return res;
-	}
+	} 
+	 
 	
 	private String getCode(String ac){ 
 		return MD5Util.SaltMd5(ac);

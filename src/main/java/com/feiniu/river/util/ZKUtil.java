@@ -93,7 +93,7 @@ public class ZKUtil {
 		try {
 			return getZk().getData((addDefault?ZKConfigPath:"")+filename, watcher, null);
 		} catch (Exception e) {
-			log.error("getData Exception", e);
+			log.error((addDefault?ZKConfigPath:"")+filename+ " ,getData Exception", e);
 			return null;
 		} 
 	}

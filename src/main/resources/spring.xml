@@ -20,6 +20,7 @@
     <mvc:annotation-driven />
     <context:annotation-config /> 
     <import resource="spring/spring-bean.xml" />
+    <import resource="spring/spring-quartz.xml" />
 </beans>
 
 

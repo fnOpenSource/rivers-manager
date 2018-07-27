@@ -1,0 +1,254 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>River Instances Manage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="River Control and Monitor Panel" />
+<script type="application/x-javascript"> 
+	 addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } 
+
+</script>
+<!-- Bootstrap Core CSS -->
+<link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+<!-- Custom CSS -->
+<link href="css/style.css" rel='stylesheet' type='text/css' />
+<!-- font CSS -->
+<!-- font-awesome icons -->
+<link href="css/font-awesome.css" rel="stylesheet">
+<!-- //font-awesome icons -->
+<!-- js-->
+<style type="text/css"> 
+.box {
+    margin-bottom: 20px;
+}
+.box .box-title h3 {
+    color: #fff;
+    display: inline-block;
+    line-height: 20px;
+    margin: 0;
+    white-space: nowrap;
+}
+.box > .box-title {
+    padding: 10px;
+    position: relative;
+    background-color: #555;
+    text-shadow: 0 1px 0 #444;
+}
+.box .box-content {
+    background: #fff none repeat scroll 0 0;
+    padding: 10px;
+}
+.contents{
+ 	height:300px;
+    max-height:300px;
+    overflow-y: scroll;
+}
+.messages {
+    list-style: none none;
+    margin: 0;
+    padding: 10px 10px 0; 
+}
+.messages > li {
+    margin-bottom: 20px;
+}
+ 
+.messages > li > b {
+    border-radius: 100%;
+    float: left;
+    height: 60px;
+    width: 30px;
+    font-size:20px;
+}
+.messages > li > div {
+    background-color: #f8f9fa;
+    margin-left: 20px;
+    padding: 1px 10px 10px;
+    position: relative;white-space: pre ;
+}
+ 
+.messages-input-form {
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    position: relative;
+}
+ 
+.messages-input-form .buttons { 
+    white-space: nowrap;
+}
+</style>
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/modernizr.custom.js"></script>
+
+<!--animate-->
+<link href="css/animate.css" rel="stylesheet" type="text/css"
+	media="all">
+<script src="js/wow.min.js"></script>
+<!--//end-animate-->
+<!-- Metis Menu -->
+<script src="js/metisMenu.min.js"></script>
+<script src="js/custom.js"></script>
+<script src="js/global.js"></script>
+<script src="js/command.js"></script>
+<script>
+	new WOW().init();
+	 getHosts();
+</script>
+<link href="css/custom.css" rel="stylesheet">
+<!--//Metis Menu -->
+</head>
+<body class="cbp-spmenu-push">
+	<div class="main-content">
+		<!--left-fixed -navigation-->
+		<div class=" sidebar" role="navigation">
+			<div class="navbar-collapse">
+				<nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left"
+					id="cbp-spmenu-s1">
+					<ul class="nav" id="side-menu">
+						<li><a href="index.html"><i class="fa fa-home nav_icon"></i>Dashboard</a>
+						</li>
+
+						<li><a href="instances.html"><i
+								class="fa fa-cogs nav_icon"></i>Instances & CloudNodes </a></li>
+
+						<li><a href="command.html" class="active"><i
+								class="fa fa-code nav_icon"></i>Command Mode</a></li>
+
+					</ul>
+					<div class="clearfix"></div>
+					<!-- //sidebar-collapse -->
+				</nav>
+			</div>
+		</div>
+		<!--left-fixed -navigation-->
+		<!-- header-starts -->
+		<div class="sticky-header header-section ">
+			<div class="header-left">
+				<!--toggle button start-->
+				<button id="showLeftPush">
+					<i class="fa fa-bars"></i>
+				</button>
+				<!--toggle button end-->
+				<!--logo -->
+				<div class="logo">
+					<a href="index.html">
+						<h1>RIVERS</h1> <span>AdminPanel</span>
+					</a>
+				</div>
+				<!--//logo-->
+				<div class="clearfix"></div>
+			</div>
+			<div class="header-right">
+				<div class="profile_details">
+					<ul>
+						<li class="dropdown profile_details_drop"><a href="#"
+							class="dropdown-toggle" data-toggle="dropdown"
+							aria-expanded="false">
+								<div class="profile_img">
+									<span class="prfil-img"><img src="images/a.png" alt="">
+									</span>
+									<div class="user-name">
+										<p>
+											<script>
+												getCurrent();
+											</script>
+										</p>
+										<span>river connect</span>
+									</div>
+									<i class="fa fa-angle-down lnr"></i> <i
+										class="fa fa-angle-up lnr"></i>
+									<div class="clearfix"></div>
+								</div>
+						</a>
+							<ul class="dropdown-menu drp-mnu">
+								<script>
+									writeEnvirements();
+								</script>
+							</ul></li>
+					</ul>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		<!-- //header-ends -->
+		<!-- main content start-->
+		<div id="page-wrapper">
+			<div class="main-page">
+				<div class="tables">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="box">
+								<div class="box-title">
+									<h3>
+										<i class="fa fa-code"></i> Command Mode
+									</h3>  
+								</div>
+								<div class="box-content">
+									<div class="contents">
+									<ul class="messages">
+										<li><b>></b>
+											<div>//code example
+Track.cpuPrepare->instance_name   //准备实例运行环境
+TaskControl.moveFullPosition->1129918039,10,1 //对实例进行操作
+Track.cpuFree  //释放实例运行环境 </div>
+										</li> 
+									</ul>
+									</div>
+									 
+									<div class="messages-input-form">
+										<form method="POST" action="#">
+											<div class="input">
+											<select id="hosts"><option>选择指令运行服务器</option></select><textarea name="codes" class="form-control"></textarea>
+											</div>
+											<div class="buttons"> 
+												<button id="sendcode" type="button" class="btn btn-primary">
+													<i class="fa fa-button"></i>发送指令
+												</button>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!--footer-->
+		<div class="footer">
+			<p>Copyright &copy;feiniu.com 2017.Rivers</p>
+		</div>
+		<!--//footer-->
+	</div>
+	<!-- Classie -->
+	<script src="js/classie.js"></script>
+	<script>
+		var menuLeft = document.getElementById('cbp-spmenu-s1'), showLeftPush = document
+				.getElementById('showLeftPush'), body = document.body;
+
+		showLeftPush.onclick = function() {
+			classie.toggle(this, 'active');
+			classie.toggle(body, 'cbp-spmenu-push-toright');
+			classie.toggle(menuLeft, 'cbp-spmenu-open');
+			disableOther('showLeftPush');
+		};
+
+		function disableOther(button) {
+			if (button !== 'showLeftPush') {
+				classie.toggle(showLeftPush, 'disabled');
+			}
+		}
+	</script>
+	<!--scrolling js-->
+	<script src="js/jquery.nicescroll.js"></script>
+	<script src="js/scripts.js"></script>
+	<!--//scrolling js-->
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/bootstrap.js">
+		
+	</script>
+  
+
+</body>
+</html>

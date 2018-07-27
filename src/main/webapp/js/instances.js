@@ -204,6 +204,8 @@ function writeRow(name,data){
 	str +='<h4>'+name+(' <a style="float:right;margin:0 3px;" reload-ip="'+reloadinfos+'" data-id="'+name+'" data-ip="'+index_ip_info+'" data-info="'+cron_content+'" class="manage_index btn btn-success" data-toggle="modal" data-target="#gridSystemModal"> <i class="fa fa-dashboard"></i> <span class="waitloading">Manage Writer</span></a>');
 	str +='<a title="edit cloud xml config file" style="float:right;margin:0 3px;" data-id="'+name+'" data-ip="'+index_ip_info+'" class="edit_config btn btn-primary" data-toggle="modal" data-target="#gridSystemModal"><i class="fa fa-edit"></i> <span style=" display:none" class="waitloading ">Edit Cloud Config</span></a>';
 	str +='<a title="upload river instance config files to cloud" style="float:right;margin:0 3px;" data-id="'+name+'" data-ip="'+index_ip_info+'" class="upload_config  btn btn-info" ><i class="fa fa-cloud-upload"></i> <span style=" display:none" class="waitloading ">Upload Instance Files</span></a>';
+	str +='<a title="reset river instance cloud status" style="float:right;margin:0 3px;" data-id="'+name+'" data-ip="'+indexips.get_key(0)+'" class="reset_config  btn btn-warning" ><i class="fa fa-eraser"></i> <span   class="waitloading ">Reset Instance Status</span></a>';
+	str +='<a title="Backup river instance cloud status and configs" style="float:right;margin:0 3px;" data-id="'+name+'" data-ip="'+indexips.get_key(0)+'" class="backup_config  btn btn-success" ><i class="fa fa-cloud-download"></i> <span   class="waitloading ">Backup Instance Configs and Status</span></a>';
 	str +='</h4><table class="table table-hover"> <thead> <tr> <th>IP</th>'+columninfo+'</tr> </thead> <tbody> '+rowinfos+' </tbody> </table>';
 	str +='</div>'; 
 	return str;
@@ -213,6 +215,46 @@ $(function(){
 		$("#savebtn").hide();
 		$("#gridSystemModalLabel").html('<i class="fa fa-bar-chart-o"></i>View '+$(this).attr("data-id")+" Run State");
 		get_info($(this).attr("data-id"),$(this).attr("data-ip")); 
+	})
+	$(document).on("click",".backup_config",function(){ 
+		 var _instance = $(this).attr("data-id"); 
+		 $.ajax({
+				url : global_service_url + "server/InstancesAction",
+				data : {  
+					action:"backup_config",
+					instance:_instance,
+					ip:$(this).attr("data-ip")
+				},
+				type : 'GET',
+				dataType : "json",
+				contentType : 'application/x-www-form-urlencoded; charset=UTF-8',
+				success : function(data) {
+					alert("success!"); 
+				},
+				error : function(data) { 
+					alert("连接失败!"); 
+				}
+			});
+	})
+	$(document).on("click",".reset_config",function(){ 
+		 var _instance = $(this).attr("data-id"); 
+		 $.ajax({
+				url : global_service_url + "server/InstancesAction",
+				data : {  
+					action:"resetInstanceState",
+					instance:_instance,
+					ip:$(this).attr("data-ip")
+				},
+				type : 'GET',
+				dataType : "json",
+				contentType : 'application/x-www-form-urlencoded; charset=UTF-8',
+				success : function(data) {
+					alert("success!"); 
+				},
+				error : function(data) { 
+					alert("连接失败!"); 
+				}
+			});
 	})
 	$(document).on("click",".upload_config",function(){ 
 		 var _instance = $(this).attr("data-id"); 
