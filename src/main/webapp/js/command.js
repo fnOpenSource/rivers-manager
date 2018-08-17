@@ -31,8 +31,16 @@ function writeRow(name,data){
 $(function(){ 
 	var height=300;
 	$(document).on("click","#sendcode",function(){   
-		height+=100; 
 		var codes = $(".messages-input-form textarea").val();
+		if($("#hosts").val().length<10){
+			alert("host not set ip!")
+			return;
+		}
+		if(codes.length<32){
+			alert("code error!")
+			return;
+		}
+		height+=100;  
 		$(".messages-input-form textarea").val(""); 
 		$(".messages").append("<li><b>&gt;</b><div>"+codes+"</div></li>");
 		$('.contents').scrollTop(height);	

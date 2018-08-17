@@ -3990,4 +3990,10 @@ h4.title3 {
     margin: 1em auto 0;
 }
 } 
+.light-blue {
+    color: #67c2ef;font-weight:bold;
+}
+.gray{
+	color: #999;
+}
 /*--//responsive-design---*/

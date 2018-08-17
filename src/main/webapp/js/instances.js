@@ -150,10 +150,12 @@ function writeRow(name,data){
 						alias = rows[j].split("|")[1];
 					}
 					is_set = true;
-					if(rows[j].split("|")[1]=='true' && r=='Indexer'){
-						css=' class="info"';
-						is_indexer = true;
+					if(rows[j].split("|")[1]=='true' && r=='OpenWrite'){
+						css+=' info'; 
 						indexips.set(ips.get_key(i),ips.get_key(i));
+					}
+					if(rows[j].split("|")[1]=='true' && r=='IsMaster'){
+						css+=' master'; 
 					}
 					reloadIPs.set(ips.get_key(i),ips.get_key(i));
 				}
@@ -162,7 +164,7 @@ function writeRow(name,data){
 				rowcontent+="<td>not set!</td>";
 			}
 		}   
-		rowinfos+="<tr"+css+" data-id="+indextype+">"+rowcontent+"</tr>";
+		rowinfos+='<tr class="'+css+'" data-id='+indextype+'>'+rowcontent+'</tr>';
 	}
    //get indexer info
 	for(var r in data){ 
@@ -387,17 +389,28 @@ function get_info(indexs,ips){
 					}
 					
 					for(var j=0;j<columns.length;j++){
-						if(columns[j].split(':')[1]!='null' && columns[j].split(':').length>1){  
-							if(row[0].indexOf('状态')>0){ 
-								if(columns[j].indexOf('full:null')>0 || columns[j].indexOf('increment:null')>0){ 
-									content+= '<div class="col-md-10 grid_box1"> 未启动或已执行完毕！ </div>'; 
+						if( columns[j].split(':').length>1){   
+							if(row[0].indexOf('状态')>0){  
+								if(columns[j].search('full:null')!= -1 || columns[j].search('increment:null')!= -1){ 
+									content+= '<div class="col-md-10 grid_box1 gray"> 未启动或已执行完毕！ </div>'; 
 								}else{
-									content+= '<div class="col-md-10 grid_box1">'+columns[j].replace(':,','<br>')+'</div>'; 
+									if(columns[j].search(":,") != -1){
+										content+= '<div class="col-md-10 grid_box1"> <span class="light-blue"><i class="fa fa-minus "></i> seq'+columns[j].replace(':,','</span><br>')+'</div>'; 
+									}else{
+										content+= '<div class="col-md-10 grid_box1"> <span class="light-blue"><i class="fa fa-minus "></i> '+columns[j].replace(':','</span><br>')+'</div>'; 
+									}
+									
 								}
 								
 							}else{
 								content+= '<div class="col-md-4 grid_box1"><span class="light-green">'+columns[j].split(':')[1]+'</span>'+columns[j].split(':')[0]+'</div>';
 				
+							} 
+						}else{
+							if(row[0].search('增量状态')!= -1 || row[0].search('增量状态')!= -1){
+								content+= '<div class="col-md-10 grid_box1 gray"> 未启动或已执行完毕！ </div>';
+							}else{
+								content+= '<div class="col-md-10 grid_box1">'+columns[j] +'</div>';
 							} 
 						}
 							

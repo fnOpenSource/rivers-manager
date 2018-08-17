@@ -17,7 +17,7 @@ if(CURRENT_FILE.indexOf(".jsp") > 0){
   CURRENT_FILE = CURRENT_PAGE+".jsp";
 } 
 
-var Envirements = [{url:"10.202.185.150",proj:"river",name:"Dev",port:'80'},{url:"product-search-indexing.beta1.fn",proj:"river",name:"Beta",port:'80'},{url:"stage-product_search_indexing.idc1.fn",proj:"river",name:"Preview",port:'80'},{url:"product_search_indexing02.idc1.fn",proj:"river",name:"Online",port:'80'}]; 
+var Envirements = [{url:"10.202.185.150",proj:"river",name:"Dev",port:'80'},{url:"product-search-indexing.beta1.fn",proj:"river",name:"Beta",port:'80'},{url:"stage-product_search_indexing.idc1.fn",proj:"river",name:"Preview",port:'80'},{url:"river.idc1.fn",proj:"",name:"Online",port:'80'}]; 
 function getCurrent(){ 
 	$("title").html(getCurrentEnvirement()+" Rivers,river connect all kinds of floor!");
 	document.write(" "+getCurrentEnvirement()+" ");   
