@@ -57,7 +57,7 @@ function getStatus() {
 						content += '<td><span class="label label-success">'
 								+ r.STATUS + '</span></td>';
 						content += '<td>' + r.TASKS + '</td>';
-						content += '<td>' + r.WRITE_BATCH + '</td>';
+						content += '<td>' + r.NODE_TYPE + '</td>';
 						content += '<td style="font-size:12px"><span class="pull-right">'
 								+ cpu
 								+ '%</span><div class="progress progress-striped  progress-left"><div class="bar '
