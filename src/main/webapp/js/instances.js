@@ -299,7 +299,11 @@ $(function(){
 			}
 			content+='<div class="col-md-3 grid_box1"><button type="button" onclick="run_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\',\''+type+'\')" class="btn btn-sm btn-success"><i class="fa fa-caret-right"></i> RUN NOW</button></div></div>';
 		}  
-		content+='<div class="row">'+$(this).attr("data-ip")!=null?'<button type="button" onclick="stop_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\')" class="btn btn-danger btn-sm stop"><i class="fa fa-stop"></i> Stop JOBS</button>  <button type="button" onclick="resume_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\')" class="btn btn-primary  btn-sm resume"><i class="fa fa-refresh"></i> Resume JOBS</button>':'';
+		content+='<div class="row">';
+		if($(this).attr("data-ip")!=null){
+			content+=' <button type="button" onclick="stop_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\',\'Increment\')" class="btn btn-danger btn-sm stop"><i class="fa fa-stop"></i> Stop Increment</button>  <button type="button" onclick="resume_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\',\'Increment\')" class="btn btn-primary  btn-sm resume"><i class="fa fa-refresh"></i> Resume Increment</button>';
+			content+=' <button type="button" onclick="stop_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\',\'FULL\')" class="btn btn-danger btn-sm stop"><i class="fa fa-stop"></i> Stop Full</button>  <button type="button" onclick="resume_job(\''+$(this).attr("data-id")+'\',\''+$(this).attr("data-ip")+'\',\'FULL\')" class="btn btn-primary  btn-sm resume"><i class="fa fa-refresh"></i> Resume Full</button>';
+		} 
 		content+=' <button type="button" onclick="Reload_Config(\''+$(this).attr("data-id")+'\',\''+$(this).attr("reload-ip")+'\')" class="btn btn-info btn-sm Reload"><i class="fa fa fa-repeat"></i> Reload'+($(this).attr("data-id")!=null?'':' ALL')+' Config</button>';
 		content+='</div>';
 		$("#gridSystemModal .modal-body").attr("contentEditable",'false');
@@ -436,7 +440,7 @@ function get_info(indexs,ips){
 }
 
 
-function stop_job(indexs,ips){
+function stop_job(indexs,ips,isIncrement){
 	var ips = ips.split(",");
 	for(var i=0;i<ips.length;i++){
 		if(ips[i]!=''){
@@ -445,7 +449,8 @@ function stop_job(indexs,ips){
 		data : {  
 			ip:ips[i].split("||")[0],
 			instancetype:ips[i].split("||")[1],
-			instance:indexs
+			instance:indexs,
+			type:isIncrement
 		},
 		type : 'GET',
 		dataType : "json",
@@ -463,7 +468,7 @@ function stop_job(indexs,ips){
 }
 
 
-function resume_job(indexs,ips){
+function resume_job(indexs,ips,isIncrement){
 	var ips = ips.split(",");
 	for(var i=0;i<ips.length;i++){
 		if(ips[i]!=''){
@@ -472,7 +477,8 @@ function resume_job(indexs,ips){
 		data : {  
 			ip:ips[i].split("||")[0],
 			instancetype:ips[i].split("||")[1],
-			instance:indexs
+			instance:indexs,
+			type:isIncrement
 		},
 		type : 'GET',
 		dataType : "json",

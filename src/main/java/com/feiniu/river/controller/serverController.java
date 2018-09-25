@@ -212,19 +212,19 @@ public class serverController {
 	@RequestMapping(value = "/resume_job", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String resume_job(@RequestParam String ip,
-			@RequestParam String instancetype, @RequestParam String instance) {
+			@RequestParam String instancetype, @RequestParam String instance, @RequestParam String type) {
 		return HttpClient.sendGet("http://" + ip + "/search.doaction",
 				"ac=resumeInstance&instance=" + instance  
-						+ "&code="+getCode("resumeInstance"));
+						+ "&code="+getCode("resumeInstance")+ "&type="+type);
 	}
 
 	@RequestMapping(value = "/stop_job", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String stop_job(@RequestParam String ip,
-			@RequestParam String instancetype, @RequestParam String instance) {
+			@RequestParam String instancetype, @RequestParam String instance, @RequestParam String type) {
 		return HttpClient.sendGet("http://" + ip + "/search.doaction",
 				"ac=stopInstance&instance=" + instance  
-						+ "&code="+getCode("stopInstance"));
+						+ "&code="+getCode("stopInstance")+ "&type="+type);
 	}
 
 	@RequestMapping(value = "/reload_config", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
