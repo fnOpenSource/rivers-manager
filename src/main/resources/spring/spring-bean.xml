@@ -29,5 +29,7 @@
     	<constructor-arg value="#{ConfigBean['zkhost']}" />
     	<constructor-arg value="#{ConfigBean['zkConfigPath']}" /> 
     	<constructor-arg value="#{ConfigBean['InstanceDataPath']}" /> 
+    	<constructor-arg value="#{ConfigBean['backupCron']}" /> 
     </bean> 
+    <bean id="Run" class="com.feiniu.river.service.Run" init-method="start" />  
 </beans>

@@ -1,5 +1,8 @@
 package com.feiniu.river.service;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,18 +19,25 @@ import net.sf.json.JSONObject;
 public class RiverCenter {
 
 	@SuppressWarnings("unchecked")
-	public void backup() {
+	public static void backup() {
 		HashMap<String, Object> tmp = getAllInstances();
 		HashMap<String, HashMap<String, HashMap<String, Object>>> instances = (HashMap<String, HashMap<String, HashMap<String, Object>>>) tmp
 				.get("data");
 		Iterator<String> iter = instances.keySet().iterator();
 		while (iter.hasNext()) {
-			String ip = iter.next();
-			String instance = "";
-			 
-		} 
+			String dt = iter.next();
+			try {
+				HashMap<String, HashMap<String, Object>> instance = instances.get(dt);
+				Iterator<String> _iter = instance.keySet().iterator();
+				while (_iter.hasNext()) {
+					backup(_iter.next());
+				}
+			} catch (Exception e) { 
+				e.printStackTrace();
+			} 
+		}
 	}
-	
+
 	public static void backup(String instance) {
 		try {
 			byte[] b = ZKUtil.getData("/" + instance + "/" + instance + ".xml", true);
@@ -35,6 +45,7 @@ public class RiverCenter {
 			if (b.length > 0) {
 				if (b != null && b.length > 0) {
 					dt = new String(b);
+					createFile(GlobalConfig.instanceFilePath+"/"+instance,instance + ".xml",dt);
 				}
 			}
 		} catch (Exception e) {
@@ -102,4 +113,25 @@ public class RiverCenter {
 		return MD5Util.SaltMd5(ac);
 	}
 
+	private static void createFile(String filePath, String fileName, String contents) throws IOException {
+		File dir = new File(filePath);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		if (fileName != null) {
+			File checkFile = new File(filePath +"/"+ fileName);
+			FileWriter writer = null;
+			try {
+				if (!checkFile.exists()) {
+					checkFile.createNewFile();
+				}
+				writer = new FileWriter(checkFile, true);
+				writer.append(contents);
+				writer.flush();
+			} finally {
+				if (null != writer)
+					writer.close();
+			}
+		}
+	}
 }
