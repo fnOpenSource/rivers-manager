@@ -1,21 +1,21 @@
 package com.feiniu.river.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.concurrent.CountDownLatch;
-
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ZKUtil { 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.concurrent.CountDownLatch;
+
+public class ZKUtil {
 	private final static int BUFFER_LEN = 1024;
 	private final static int END = -1;
 	private static final int CONNECTION_TIMEOUT = 50000;
@@ -27,12 +27,12 @@ public class ZKUtil {
 	private static Watcher watcher = null;
 	private final static Logger log = LoggerFactory.getLogger(ZKUtil.class);
 
-	private static ZooKeeper getZk() { 
+	private static ZooKeeper getZk() {
 		synchronized (ZKUtil.class) {
 			if (zk == null || zk.getState().equals(States.CLOSED)) {
 				connection();
 			}
-		} 
+		}
 		return zk;
 	}
 
@@ -53,7 +53,7 @@ public class ZKUtil {
 	public static void setZkHost(String zkString) {
 		zkHost = zkString;
 	}
-	
+
 	public static void setZkConfigPath(String zkConfigPath) {
 		ZKConfigPath = zkConfigPath;
 	}
@@ -64,9 +64,9 @@ public class ZKUtil {
 			getZk().setData((addDefault?ZKConfigPath:"")+filename, bt, -1);
 		} catch (Exception e) {
 			log.error("setData Exception", e);
-		} 
+		}
 	}
-	
+
 	public static boolean fileExists(String file){
 		Stat stat = null;
 		try {
@@ -79,14 +79,29 @@ public class ZKUtil {
 		}
 		return true;
 	}
-	
+
 	public static void create(String file){
 		try {
 			getZk().create(file, "".getBytes(), Ids.OPEN_ACL_UNSAFE,
-					CreateMode.PERSISTENT); 
+					CreateMode.PERSISTENT);
 		}catch(Exception e){
 			log.error("fileExists Exception", e);
 		}
+	}
+
+	public static String createPath(String path,boolean PERSISTENT){
+		try{
+			if(getZk().exists(path, true)==null){
+				if(PERSISTENT){
+					return getZk().create(path, "".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+				}else{
+					return getZk().create(path, "".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+				}
+			}
+		} catch (Exception e) {
+			log.error("createPath Exception", e);
+		}
+		return null;
 	}
 
 	public static byte[] getData(String filename,boolean addDefault) {
@@ -95,30 +110,30 @@ public class ZKUtil {
 		} catch (Exception e) {
 			log.error((addDefault?ZKConfigPath:"")+filename+ " ,getData Exception", e);
 			return null;
-		} 
+		}
 	}
 	/**
-	 * 
+	 *
 	 * @param sourceFolder source Folder
 	 * @param destinationFolder upload destination Folder
 	 */
-	public static void upload(String sourceFolder,String destinationFolder) {  
+	public static void upload(String sourceFolder,String destinationFolder) {
 		if (!fileExists(destinationFolder)) {
 			create(destinationFolder);
 		}
-		moveFile(sourceFolder, destinationFolder);  
+		moveFile(sourceFolder, destinationFolder);
 	}
 
-	private static void moveFile(String sourceAdd, String destinationAdd) { 
-		InputStream in = null; 
+	private static void moveFile(String sourceAdd, String destinationAdd) {
+		InputStream in = null;
 		String remoteAdd = null;
 		try {
-			File file = new File(sourceAdd);  
+			File file = new File(sourceAdd);
 			if (!file.isDirectory()) {
 				in = new FileInputStream(sourceAdd);
-				remoteAdd = destinationAdd + "/" + file.getName(); 
+				remoteAdd = destinationAdd + "/" + file.getName();
 				if (!fileExists(remoteAdd)) {
-					create(remoteAdd); 
+					create(remoteAdd);
 				}
 				StringBuffer sb = new StringBuffer();
 				byte[] buffer = new byte[BUFFER_LEN];
@@ -136,22 +151,22 @@ public class ZKUtil {
 							+ filelist[i]);
 					if (!readfile.isDirectory()) {
 						in = new FileInputStream(sourceAdd + "/"
-								+ filelist[i]);  
+								+ filelist[i]);
 						if (!fileExists(destinationAdd)) {
-							create(destinationAdd);  
+							create(destinationAdd);
 						}
 						remoteAdd = destinationAdd + "/"
-								+ file.getName(); 
+								+ file.getName();
 						if(!fileExists(remoteAdd)){
-							create(remoteAdd);  
-						} 
+							create(remoteAdd);
+						}
 						remoteAdd = destinationAdd + "/"
 								+ file.getName() + "/"
 								+ readfile.getName();
 						if(!fileExists(remoteAdd)){
-							create(remoteAdd);  
+							create(remoteAdd);
 						}
- 
+
 						StringBuffer sb = new StringBuffer();
 						byte[] buffer = new byte[BUFFER_LEN];
 						while (true) {
@@ -160,18 +175,18 @@ public class ZKUtil {
 								break;
 							sb.append(new String(buffer, 0, byteRead));
 						}
-						setData(remoteAdd, sb.toString(),false);  
-					} else if (readfile.isDirectory()) { 
+						setData(remoteAdd, sb.toString(),false);
+					} else if (readfile.isDirectory()) {
 						String sourceAdd2 = sourceAdd + "/"
 								+ readfile.getName();
 						String destinationAdd2 = destinationAdd + "/"
-								+ file.getName(); 
+								+ file.getName();
 						moveFile(sourceAdd2, destinationAdd2);
 					}
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}  
-	} 
+		}
+	}
 }
